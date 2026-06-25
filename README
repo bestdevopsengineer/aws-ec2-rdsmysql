@@ -114,3 +114,19 @@ aws-nodejs-rds-crud-app/
       Delete User
       Search User
       View All Users
+
+
+
+    Terraform (modular, with separate components and modules)
+    GitHub Actions for CI/CD
+    Docker for the Node.js application
+    Amazon ECR for storing container images
+    Auto Scaling Group using a Launch Template
+    Application Load Balancer
+    RDS MySQL Multi-AZ
+    CloudWatch logs and alarms
+    IAM Roles
+    AWS Systems Manager (SSM) for EC2 access (avoiding SSH keys in production)
+    HTTPS with an ACM certificate
+    Route 53 for a custom domain (optional)
+    Terraform remote state in S3 with DynamoDB locking
