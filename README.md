@@ -3,38 +3,93 @@
 aws-nodejs-rds-crud-app/
 │
 ├── terraform/
-│   ├── modules/
-│   │   ├── vpc/
-│   │   ├── security-groups/
-│   │   ├── alb/
-│   │   ├── ec2/
-│   │   ├── autoscaling/
-│   │   ├── rds/
-│   │   ├── iam/
-│   │   └── nat-gateway/
+│
+│── components/
 │   │
-│   └── components/
-│       └── production/
-│           ├── main.tf
-│           ├── provider.tf
-│           ├── variables.tf
-│           ├── outputs.tf
-│           ├── backend.tf
-│           └── terraform.tfvars
+│   ├── vpc/
+│   │   ├── backend.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── terraform.tfvars
+│   │
+│   ├── security-group/
+│   │   ├── backend.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── terraform.tfvars
+│   │
+│   ├── alb/
+│   │   ├── backend.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── terraform.tfvars
+│   │
+│   ├── ec2/
+│   │   ├── backend.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── terraform.tfvars
+│   │
+│   ├── autoscaling/
+│   │   ├── backend.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── terraform.tfvars
+│   │
+│   ├── rds/
+│   │   ├── backend.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── terraform.tfvars
+│   │
+│   ├── iam/
+│   ├── nat-gateway/
+│   ├── internet-gateway/
+│   ├── route-table/
+│   ├── launch-template/
+│   └── cloudwatch/
+│
+├── modules/
+│   ├── vpc/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── security-group/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   │
+│   ├── alb/
+│   ├── ec2/
+│   ├── autoscaling/
+│   ├── rds/
+│   ├── iam/
+│   ├── nat-gateway/
+│   ├── internet-gateway/
+│   ├── route-table/
+│   ├── launch-template/
+│   └── cloudwatch/
 │
 └── app/
     ├── app.js
     ├── package.json
-    ├── package-lock.json
+    ├── routes/
     ├── views/
-    │   ├── index.ejs
-    │   ├── add.ejs
-    │   ├── edit.ejs
-    │   └── search.ejs
     ├── public/
-    │   └── style.css
-    └── routes/
-
+    └── Dockerfile
 
 # For this project, we'll build the following modules one by one:
 
