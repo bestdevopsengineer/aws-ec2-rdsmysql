@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  terraform:
+    build:
+      context: .
+      # you can also specify dockerfile: Dockerfile here if yours is named differently
+    image: terraform-aws    # ← move image: out from under build
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+      - AWS_REGION
+      - AWS_DEFAULT_REGION
+    entrypoint: ["terraform"]
