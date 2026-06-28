@@ -1,0 +1,199 @@
+name: Deploy by Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to run against"
+        type: choice
+        required: true
+        options: [dev, stage, prod]
+
+      component:
+        description: "Terraform component"
+        type: choice
+        required: true
+        options:
+          - vpc
+          - internet-gateway
+          - nat-gateway
+          - route-table
+          - security-group
+          - rds
+          - iam
+          - launch-template
+          - alb
+          - autoscaling
+          - cloudwatch
+
+      action:
+        description: "Terraform action"
+        type: choice
+        required: true
+        options: [plan, apply, destroy]
+
+  pull_request:
+    branches: [dev, stage, prod]
+
+  push:
+    branches: [dev, stage, prod]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    environment: ${{ github.base_ref }}
+
+    strategy:
+      matrix:
+        component:
+          - vpc
+          - internet-gateway
+          - nat-gateway
+          - route-table
+          - security-group
+          - rds
+          - iam
+          - launch-template
+          - alb
+          - autoscaling
+          - cloudwatch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Confirm AWS account
+        run: aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          terraform -chdir=terraform/components/${{ matrix.component }} init \
+            -backend-config=backend/${{ github.base_ref }}.tfvars
+
+      - name: Terraform Format Check
+        run: terraform -chdir=terraform/components/${{ matrix.component }} fmt -check
+
+      - name: Terraform Validate
+        run: terraform -chdir=terraform/components/${{ matrix.component }} validate
+
+      - name: Terraform Security Scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: terraform/components/${{ matrix.component }}
+          framework: terraform
+          soft_fail: true
+
+      - name: Terraform Plan
+        run: |
+          terraform -chdir=terraform/components/${{ matrix.component }} plan \
+            -var-file="../../environments/${{ github.base_ref }}.tfvars"
+
+  deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+
+    strategy:
+      matrix:
+        component:
+          - vpc
+          - internet-gateway
+          - nat-gateway
+          - route-table
+          - security-group
+          - rds
+          - iam
+          - launch-template
+          - alb
+          - autoscaling
+          - cloudwatch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Confirm AWS account
+        run: aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          terraform -chdir=terraform/components/${{ matrix.component }} init \
+            -backend-config=backend/${{ github.ref_name }}.tfvars
+
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=terraform/components/${{ matrix.component }} apply \
+            -var-file="../../environments/${{ github.ref_name }}.tfvars" \
+            -auto-approve
+
+  manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Confirm AWS account
+        run: aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          terraform -chdir=terraform/components/${{ inputs.component }} init \
+            -backend-config=backend/${{ inputs.environment }}.tfvars
+
+      - name: Terraform Plan
+        if: inputs.action == 'plan'
+        run: |
+          terraform -chdir=terraform/components/${{ inputs.component }} plan \
+            -var-file="../../environments/${{ inputs.environment }}.tfvars"
+
+      - name: Terraform Apply
+        if: inputs.action == 'apply'
+        run: |
+          terraform -chdir=terraform/components/${{ inputs.component }} apply \
+            -var-file="../../environments/${{ inputs.environment }}.tfvars" \
+            -auto-approve
+
+      - name: Terraform Destroy
+        if: inputs.action == 'destroy'
+        run: |
+          terraform -chdir=terraform/components/${{ inputs.component }} destroy \
+            -var-file="../../environments/${{ inputs.environment }}.tfvars" \
+            -auto-approve

@@ -43,7 +43,7 @@ docker-compose run --rm terraform \
   -chdir=terraform/components/vpc init \
     -backend-config=backend/dev.tfvars
 
-
+docker-compose run --rm terraform -chdir=terraform/components/vpc init -backend-config=backend/dev.tfvars -reconfigure
 **Plan** infrastructure changes for storage/dev:
 
 bash
