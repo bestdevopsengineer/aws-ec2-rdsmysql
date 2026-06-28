@@ -55,16 +55,16 @@ jobs:
       matrix:
         component:
           - vpc
-          - internet-gateway
-          - nat-gateway
-          - route-table
-          - security-group
-          - rds
-          - iam
-          - launch-template
-          - alb
-          - autoscaling
-          - cloudwatch
+          # - internet-gateway
+          # - nat-gateway
+          # - route-table
+          # - security-group
+          # - rds
+          # - iam
+          # - launch-template
+          # - alb
+          # - autoscaling
+          # - cloudwatch
 
     steps:
       - name: Checkout code
@@ -114,16 +114,16 @@ jobs:
       matrix:
         component:
           - vpc
-          - internet-gateway
-          - nat-gateway
-          - route-table
-          - security-group
-          - rds
-          - iam
-          - launch-template
-          - alb
-          - autoscaling
-          - cloudwatch
+          # - internet-gateway
+          # - nat-gateway
+          # - route-table
+          # - security-group
+          # - rds
+          # - iam
+          # - launch-template
+          # - alb
+          # - autoscaling
+          # - cloudwatch
 
     steps:
       - name: Checkout code
